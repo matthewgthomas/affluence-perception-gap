@@ -116,6 +116,7 @@
   .grid-l{stroke:var(--line);stroke-width:1}
   .ppoint{transition:opacity .5s ease,r .4s ease}
   .pseg{transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+  .sline,.sgap,.smark{transition:opacity .6s ease}
 
   /* ---------- INTERACTIVE / EXPLORER ---------- */
   .tool{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -183,6 +184,18 @@
   .compbar span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:600;min-width:0}
   .complegend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:.85rem;color:var(--muted)}
   .complegend b{color:var(--ink)}
+
+  /* two-column compare */
+  .split{display:grid;gap:16px;margin-top:26px}
+  @media(min-width:620px){.split{grid-template-columns:1fr 1fr}}
+  .split .col{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow)}
+  .split .col h4{font-family:var(--sans);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:700}
+  .split .col.up{border-top:4px solid var(--reality)}
+  .split .col.down{border-top:4px solid var(--rich)}
+  .split .col .big{font-family:var(--serif);font-weight:600;font-size:1.6rem;line-height:1.1;margin:0 0 10px}
+  .split .col.up .big{color:var(--reality-dk)}
+  .split .col.down .big{color:var(--rich)}
+  .split .col p{margin:0;font-size:.98rem;color:#3a352e;line-height:1.55}
 
   /* closing + sources */
   .close{padding:14vh 0 8vh}
@@ -416,6 +429,71 @@
   </div>
 </section>
 
+<!-- ============ TRANSITION — moving target ============ -->
+<section class="prose tight">
+  <div class="wrap">
+    <div class="kicker">A moving target</div>
+    <h2>And the ground keeps shifting beneath everyone.</h2>
+    <p class="big">Affluence isn't fixed. A salary that felt generous in 2007 buys far less today. Shock after shock — a financial crash, a pandemic, an energy crisis, the next war — has quietly rewritten what your money is actually worth, and how rich you feel saying the number out loud.</p>
+    <p>The catch is that <strong>inflation hides the damage</strong>. Your payslip still shows the same figure, or even a bigger one, so it doesn't <em>feel</em> like getting poorer — even when it is. Economists call it the money illusion. Britain has lived through a brutal lesson in it.</p>
+  </div>
+</section>
+
+<!-- ============ SCROLLY 4 — SHOCKS OVER TIME ============ -->
+<section class="scrolly" id="shocks" data-scrolly>
+  <div class="scrolly__graphic">
+    <div class="chart-shell"><div id="shockChart"></div></div>
+    <div class="chart-cap" id="shockCap">Real take-home pay over time (2008 = 100)</div>
+  </div>
+  <div class="scrolly__steps">
+    <div class="step" data-step="0">
+      <div class="card"><span class="n">1</span><h3>Pay used to rise like clockwork.</h3>
+        <p>For decades before 2008, the typical worker's real wages climbed by roughly 2% a year, almost without fail. Each generation could expect to be better off than the last.</p></div>
+    </div>
+    <div class="step" data-step="1">
+      <div class="card"><span class="n">2</span><h3>Had that simply continued…</h3>
+        <p>…the average worker would be around <mark>£11,000 a year</mark> better off today. This dashed line is the prosperity Britain was on track for.</p></div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="card"><span class="n">3</span><h3>The 2008 crash broke the trend.</h3>
+        <p>Real wages flatlined for <strong>fifteen years</strong> — the worst pay stagnation since the Napoleonic Wars. The shaded wedge is growth that never arrived. Meanwhile cheap-money policy inflated house and share prices, quietly rewarding those who <em>already owned</em> assets.</p></div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="card"><span class="n">4</span><h3>Then the shocks came faster.</h3>
+        <p>A pandemic, then an energy crisis supercharged by the war in Ukraine, drove inflation to <mark class="t">11.1%</mark> in 2022 — a 41-year high. Typical energy bills leapt from about £1,000 to £2,500. Pay shrank in real terms even as the numbers on the payslip grew.</p></div>
+    </div>
+    <div class="step" data-step="4">
+      <div class="card"><span class="n">5</span><h3>The next one is never far away.</h3>
+        <p>In June 2025 a twelve-day war between Israel and Iran sent oil spiking once more. It receded within weeks — but the lesson stuck: real affluence now lives one shock away from the headlines.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SYNTHESIS — the cruel twist ============ -->
+<section class="prose">
+  <div class="wrap">
+    <div class="kicker">The cruel twist</div>
+    <h2>Shocks make us <em>feel</em> equal — while pulling us apart.</h2>
+    <p class="big">When prices surge, everyone feels it, so everyone says the same thing: "we're all struggling." Even the genuinely well-off feel the pinch — which only hardens the top 10%'s conviction that they, too, are just about managing.</p>
+    <p>But "we're all in it together" is the illusion. The very same shocks that make affluence feel universal actually widen the real gap, because they land on a country split in two.</p>
+
+    <div class="split">
+      <div class="col up">
+        <h4>If you owned assets</h4>
+        <div class="big">A cushion that grew</div>
+        <p>During the pandemic, locked-down higher earners couldn't spend — the savings ratio hit a record <strong>25.9%</strong> and households banked an estimated <strong>£125–180bn</strong>, overwhelmingly at the top. House prices and pensions, lifted by cheap money, pushed their paper wealth higher still.</p>
+      </div>
+      <div class="col down">
+        <h4>If you relied on wages</h4>
+        <div class="big">A blow with no buffer</div>
+        <p>Lower earners were likelier to be furloughed or lose work, with little saved to fall back on. When inflation hit there was no asset cushion to soften it — just energy bills, rising rents and, for many, fresh debt or skipped meals.</p>
+      </div>
+    </div>
+
+    <p class="big" style="margin-top:34px">That is the perception gap's nastiest feature. A crisis feels like shared sacrifice, breeding a sense that everyone is roughly in the same boat — at the exact moment the distance between the asset-rich top and the wage-dependent rest is growing fastest of all.</p>
+  </div>
+</section>
+
 <!-- ============ DATA EXPLORER ============ -->
 <section class="tool" id="explorer">
   <div class="wrap">
@@ -478,8 +556,12 @@
       <li>The Guardian — <a href="https://www.theguardian.com/commentisfree/2024/jan/24/britain-richest-10-per-cent-wealthy-inequality-labour-private-schools">Britain's richest 10% and the stories the wealthy tell themselves</a>.</li>
       <li>New Statesman — <a href="https://www.newstatesman.com/politics/economy/2023/07/rich-people-britain-sad">Why rich people in Britain are sad</a>.</li>
       <li>HMRC Survey of Personal Incomes / IFS — individual income percentiles (top 10% ≈ £60k; top 1% ≈ £200k).</li>
+      <li>Resolution Foundation — <a href="https://www.resolutionfoundation.org/press-releases/15-years-of-economic-stagnation-has-left-workers-across-britain-with-an-11000-a-year-lost-wages-gap/">15 years of stagnation and the £11,000-a-year lost-wages gap</a>.</li>
+      <li>ONS — <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/october2022">Consumer price inflation, UK: October 2022</a> (CPI 11.1%, a 41-year high; energy-price contribution).</li>
+      <li>House of Commons Library / Bank of England — <a href="https://commonslibrary.parliament.uk/research-briefings/cbp-9060/">Coronavirus: impact on household savings and debt</a> (record 25.9% savings ratio; ≈ £125–180bn excess savings).</li>
+      <li>Goldman Sachs — <a href="https://www.goldmansachs.com/insights/articles/how-will-the-iran-conflict-impact-oil-prices">How will the Iran conflict impact oil prices?</a> (June 2025 oil spike).</li>
     </ol>
-    <p class="note">A note on the numbers: income percentiles use individual gross income among earners; wealth percentiles use total household net wealth (ONS). Headline statistics are quoted directly from the sources above. The percentile look-up tools interpolate between published thresholds, so treat a result as a close estimate, not an exact rank. The "where people think they rank" line is a stylised illustration of a finding replicated across many surveys — that self-placement compresses toward the middle — not a single published dataset.</p>
+    <p class="note">A note on the numbers: income percentiles use individual gross income among earners; wealth percentiles use total household net wealth (ONS). Headline statistics are quoted directly from the sources above. The percentile look-up tools interpolate between published thresholds, so treat a result as a close estimate, not an exact rank. The "where people think they rank" line is a stylised illustration of a finding replicated across many surveys — that self-placement compresses toward the middle — not a single published dataset. The real-pay timeline is an indexed illustration (2008 = 100) of the documented pattern — a long post-2008 stagnation against the pre-crash trend — rather than an exact ONS earnings series.</p>
   </div>
 </section>
 
@@ -744,9 +826,69 @@ function wealthStep(k){
 }
 
 /* =========================================================
+   CHART 4 — Shocks: real pay vs. the lost pre-2008 trend
+========================================================= */
+const SH_ACTUAL=[[2005,96],[2006,98],[2007,99],[2008,100],[2009,99],[2010,97],[2011,94],[2012,92],[2013,91],[2014,90],[2015,92],[2016,94],[2017,95],[2018,96],[2019,98],[2020,99],[2021,100],[2022,96],[2023,95],[2024,97],[2025,99],[2026,100]];
+const SH_MARKS=[
+  {yr:2008,lab:'2008 crash',col:'#6d665b',lx:124,ly:20,anchor:'middle',step:2},
+  {yr:2020,lab:'Pandemic',col:'#137a73',lx:435,ly:20,anchor:'middle',step:3},
+  {yr:2022,lab:'Inflation 11.1%',col:'#bb3a2c',lx:486,ly:38,anchor:'middle',step:3},
+  {yr:2025,lab:'Iran oil',col:'#dd8a1f',lx:565,ly:20,anchor:'end',step:4}
+];
+(function buildShocks(){
+  const W=660,H=440,padL=46,padR=70,padT=30,padB=44;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const y0=2005,y1=2026, vMin=86,vMax=146;
+  const X=yr=>padL+(yr-y0)/(y1-y0)*innerW;
+  const Y=v=>(H-padB)-(v-vMin)/(vMax-vMin)*innerH;
+  const trend=[]; for(let yr=2008;yr<=2026;yr++){ trend.push([yr,100*Math.pow(1.02,yr-2008)]); }
+  const path=arr=>'M '+arr.map(([yr,v])=>X(yr).toFixed(1)+' '+Y(v).toFixed(1)).join(' L ');
+  const early=SH_ACTUAL.filter(d=>d[0]<=2008);
+  const late=SH_ACTUAL.filter(d=>d[0]>=2008);
+  const gapPts=trend.map(([yr,v])=>X(yr).toFixed(1)+','+Y(v).toFixed(1)).join(' ')+' '+late.slice().reverse().map(([yr,v])=>X(yr).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+  let grid='';
+  [90,100,110,120,130,140].forEach(v=>{ grid+=`<line class="grid-l" x1="${padL}" y1="${Y(v).toFixed(1)}" x2="${W-padR}" y2="${Y(v).toFixed(1)}" opacity="${v===100?.9:.32}"/><text class="axis-l" x="${padL-6}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end">${v}</text>`; });
+  let marks='';
+  SH_MARKS.forEach((m,i)=>{ const x=X(m.yr); const av=SH_ACTUAL.find(d=>d[0]===m.yr)[1];
+    marks+=`<g class="smark" data-i="${i}" style="opacity:0">`+
+      `<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${H-padB}" stroke="${m.col}" stroke-width="1.2" stroke-dasharray="3 4" opacity=".55"/>`+
+      `<circle cx="${x.toFixed(1)}" cy="${Y(av).toFixed(1)}" r="4.5" fill="${m.col}"/>`+
+      `<text class="anno" x="${m.lx}" y="${m.ly}" text-anchor="${m.anchor}" fill="${m.col}" font-size="12">${m.lab}</text></g>`;
+  });
+  $('#shockChart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Real UK pay versus the pre-2008 trend, with economic shocks marked">
+    <g>${grid}</g>
+    <polygon id="sGap" class="sgap" points="${gapPts}" fill="#dd8a1f" opacity="0"/>
+    <path id="sTrend" class="sline" d="${path(trend)}" fill="none" stroke="#b08a4a" stroke-width="2.5" stroke-dasharray="7 6" opacity="0" stroke-linecap="round"/>
+    <path id="sActEarly" class="sline" d="${path(early)}" fill="none" stroke="#137a73" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="sActLate" class="sline" d="${path(late)}" fill="none" stroke="#137a73" stroke-width="3.5" opacity="0" stroke-linecap="round" stroke-linejoin="round"/>
+    <g id="sMarks">${marks}</g>
+    <text id="sGapLab" class="anno" x="${X(2018).toFixed(1)}" y="${Y(116).toFixed(1)}" text-anchor="middle" fill="#9a5a16" font-size="13" opacity="0">≈ £11,000 a year lost</text>
+    <text id="sTrendLab" class="axis-l" x="${W-padR+4}" y="${Y(trend[trend.length-1][1]).toFixed(1)}" fill="#b08a4a" font-size="11" opacity="0">if 2008<tspan x="${W-padR+4}" dy="13">trend held</tspan></text>
+    <text class="axis-l" x="${W-padR+4}" y="${(Y(100)+4).toFixed(1)}" fill="#137a73" font-size="11">actual</text>
+    <text class="axis-t" x="${padL}" y="${H-14}">2005</text>
+    <text class="axis-t" x="${W-padR}" y="${H-14}" text-anchor="end">2026</text>
+  </svg>`;
+})();
+function shocksStep(k){
+  const set=(id,o)=>{ const el=document.getElementById(id); if(el) el.style.opacity=o; };
+  set('sTrend', k>=1?1:0);
+  set('sTrendLab', k>=1?1:0);
+  set('sActLate', k>=2?1:0);
+  set('sGap', k>=2?0.2:0);
+  set('sGapLab', k>=2?1:0);
+  document.querySelectorAll('#sMarks .smark').forEach(g=>{ const need=SH_MARKS[+g.dataset.i].step; g.style.opacity = k>=need?1:0; });
+  const caps=['Real take-home pay over time (2008 = 100)',
+    'The path Britain was on before the crash.',
+    'Fifteen years of pay that never came.',
+    'Inflation hit a 41-year high in 2022.',
+    'One shock is never the last.'];
+  $('#shockCap').textContent=caps[k]||caps[0];
+}
+
+/* =========================================================
    Scrollytelling — IntersectionObserver
 ========================================================= */
-const stepHandlers={ parade:paradeStep, perception:percStep, wealth:wealthStep };
+const stepHandlers={ parade:paradeStep, perception:percStep, wealth:wealthStep, shocks:shocksStep };
 function initScrolly(id){
   const section=document.getElementById(id);
   const steps=[...section.querySelectorAll('.step')];
@@ -763,7 +905,7 @@ function initScrolly(id){
   },{rootMargin:'-46% 0px -46% 0px',threshold:0});
   steps.forEach(s=>io.observe(s));
 }
-['parade','perception','wealth'].forEach(initScrolly);
+['parade','perception','wealth','shocks'].forEach(initScrolly);
 
 /* =========================================================
    Strip / marker helper
