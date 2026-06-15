@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rich, and the Last to Know It — The UK Affluence Perception Gap</title>
+<meta name="description" content="An interactive scrollytelling story and data explorer about the gap between how wealthy Britons feel and how wealthy they really are.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f2ea;
+    --bg-2:#efe8db;
+    --ink:#191713;
+    --muted:#6d665b;
+    --line:#d9d0c1;
+    --reality:#137a73;     /* data / how things really are */
+    --reality-dk:#0c534e;
+    --perception:#dd8a1f;  /* feeling / what people think */
+    --rich:#bb3a2c;        /* the very top */
+    --hero:#10211f;
+    --card:#fffdf8;
+    --shadow:0 18px 50px -24px rgba(20,16,10,.55);
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:18px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.08;letter-spacing:-.01em;margin:0}
+  a{color:var(--reality-dk)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 24px}
+
+  /* progress bar */
+  #progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--reality);z-index:120;transition:width .08s linear}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100svh;background:var(--hero);color:#f5efe2;
+    display:flex;flex-direction:column;justify-content:center;
+    position:relative;overflow:hidden;padding:64px 0;
+  }
+  .hero__bg{position:absolute;inset:0;opacity:.5;pointer-events:none}
+  .hero__inner{position:relative;z-index:2}
+  .eyebrow{font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:#cdb88a;font-weight:600;margin-bottom:22px}
+  .hero h1{font-size:clamp(2.7rem,8vw,5.6rem);font-weight:600;max-width:14ch}
+  .hero h1 em{font-style:italic;color:#f0b95a}
+  .hero__sub{font-size:clamp(1.05rem,2.4vw,1.4rem);color:#d8cfbe;max-width:46ch;margin-top:28px;line-height:1.5}
+  .scrollcue{margin-top:54px;display:flex;align-items:center;gap:12px;color:#bdae93;font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+  .scrollcue .dot{width:26px;height:42px;border:2px solid #6f6a59;border-radius:14px;position:relative;flex:none}
+  .scrollcue .dot::after{content:"";position:absolute;left:50%;top:8px;width:4px;height:8px;border-radius:3px;background:#cdb88a;transform:translateX(-50%);animation:wheel 1.6s infinite}
+  @keyframes wheel{0%{opacity:0;transform:translate(-50%,0)}40%{opacity:1}100%{opacity:0;transform:translate(-50%,14px)}}
+
+  /* ---------- prose blocks ---------- */
+  .prose{padding:14vh 0}
+  .prose.tight{padding:9vh 0}
+  .kicker{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--reality);font-weight:700;margin-bottom:18px}
+  .prose h2{font-size:clamp(1.9rem,4.6vw,3rem);margin-bottom:6px;max-width:18ch}
+  .lede{font-size:clamp(1.15rem,2.6vw,1.5rem);line-height:1.5;color:var(--ink)}
+  .prose p{margin:1.1em 0;color:#2c2823}
+  .prose p.big{font-size:1.32rem;line-height:1.5}
+  strong{font-weight:700}
+  mark{background:linear-gradient(transparent 58%, #f4dca0 58%);color:inherit;padding:0 .05em}
+  mark.t{background:linear-gradient(transparent 58%, #aee0db 58%)}
+
+  /* pull stat */
+  .pullnum{font-family:var(--serif);font-weight:600;line-height:1;color:var(--reality);font-size:clamp(3.2rem,11vw,6rem);letter-spacing:-.02em}
+
+  /* ---------- SCROLLY ---------- */
+  .scrolly{position:relative;max-width:1240px;margin:0 auto;padding:0 24px}
+  .scrolly__graphic{
+    position:sticky;top:0;height:100svh;align-self:start;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  }
+  .chart-shell{width:100%;max-width:660px}
+  .chart-cap{font-size:13px;color:var(--muted);text-align:center;min-height:1.2em}
+  .scrolly__steps{position:relative;z-index:3}
+  .step{min-height:92vh;display:flex;align-items:center}
+  .step:first-child{min-height:62vh}
+  .step:last-child{min-height:78vh}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px 28px;box-shadow:var(--shadow);max-width:430px;
+    opacity:.34;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;
+  }
+  .step.is-active .card{opacity:1;transform:none}
+  .card .n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--reality);color:#fff;font-weight:700;font-size:14px;margin-bottom:12px;font-family:var(--sans)}
+  .card h3{font-size:1.35rem;margin-bottom:6px}
+  .card p{margin:.5em 0 0;font-size:1.02rem;color:#3a352e;line-height:1.55}
+  .card .quote{font-style:italic;color:var(--reality-dk);border-left:3px solid var(--perception);padding-left:14px;margin-top:14px}
+
+  @media(min-width:920px){
+    .scrolly{display:grid;grid-template-columns:minmax(360px,1fr) minmax(380px,1.05fr);column-gap:60px;align-items:start}
+    .scrolly__graphic{grid-column:2;grid-row:1}
+    .scrolly__steps{grid-column:1;grid-row:1}
+  }
+  @media(max-width:919px){
+    .scrolly__graphic{height:54svh;background:linear-gradient(180deg,var(--bg) 70%,rgba(246,242,234,0));padding-bottom:8px;z-index:2}
+    .chart-shell{max-width:520px}
+    .step{min-height:74vh}
+    .card{margin:0 auto;backdrop-filter:blur(2px)}
+  }
+
+  /* ---------- SVG chart styling ---------- */
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .bar{transition:fill .45s ease,opacity .45s ease}
+  .axis-l{font-size:12px;fill:var(--muted);font-family:var(--sans)}
+  .axis-t{font-size:13px;fill:var(--ink);font-weight:600;font-family:var(--sans)}
+  .anno{font-size:13px;font-weight:600;font-family:var(--sans)}
+  .grid-l{stroke:var(--line);stroke-width:1}
+  .ppoint{transition:opacity .5s ease,r .4s ease}
+  .pseg{transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+
+  /* ---------- INTERACTIVE / EXPLORER ---------- */
+  .tool{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .tool .wrap{max-width:860px;padding-top:8vh;padding-bottom:9vh}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:30px;margin-top:26px}
+  .toggle{display:inline-flex;background:var(--bg-2);border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px;margin-bottom:8px}
+  .toggle button{border:0;background:transparent;font:inherit;font-weight:600;font-size:.95rem;color:var(--muted);padding:8px 18px;border-radius:999px;cursor:pointer;transition:.2s}
+  .toggle button.on{background:var(--ink);color:#fff}
+  .field{margin-top:18px}
+  .field label{display:block;font-weight:600;font-size:.95rem;margin-bottom:8px}
+  .inrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .money{position:relative;flex:1;min-width:180px}
+  .money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600}
+  .money input{width:100%;font:inherit;font-weight:600;font-size:1.2rem;padding:12px 12px 12px 30px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+  .money input:focus{outline:none;border-color:var(--reality)}
+  input[type=range]{width:100%;margin-top:16px;accent-color:var(--reality);height:24px}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .presets button{font:inherit;font-size:.85rem;font-weight:600;color:var(--reality-dk);background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;transition:.18s}
+  .presets button:hover{border-color:var(--reality);background:#f0faf8}
+
+  .readout{margin-top:26px;text-align:center}
+  .readout .pct{font-family:var(--serif);font-weight:700;color:var(--reality);font-size:clamp(3rem,12vw,5.2rem);line-height:.95;letter-spacing:-.02em}
+  .readout .pct small{font-size:.34em;color:var(--muted);font-weight:600;font-family:var(--sans);letter-spacing:.02em;display:block;margin-top:6px}
+  .readout .sent{font-size:1.12rem;margin-top:8px;color:var(--ink)}
+  .readout .sent b{color:var(--reality-dk)}
+
+  .strip-wrap{margin-top:26px}
+  .strip{position:relative;height:58px}
+  .strip .bg{position:absolute;inset:0;border-radius:10px;background:linear-gradient(90deg,#cfe7e4,#7ec3bc 55%,var(--reality) 82%,var(--rich));opacity:.9}
+  .strip .tick{position:absolute;top:0;bottom:0;width:1px;background:rgba(0,0,0,.22)}
+  .strip .ticklab{position:absolute;top:62px;font-size:11px;color:var(--muted);transform:translateX(-50%);white-space:nowrap;font-weight:600}
+  .marker{position:absolute;top:-10px;bottom:-10px;width:3px;background:var(--ink);transition:left .5s cubic-bezier(.2,.7,.2,1);z-index:3}
+  .marker::after{content:attr(data-l);position:absolute;top:-26px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+  .marker.ghost{background:var(--perception);opacity:.92;z-index:2}
+  .marker.ghost::after{background:var(--perception);top:auto;bottom:-26px}
+  .stripkey{display:flex;gap:18px;flex-wrap:wrap;margin-top:42px;font-size:.85rem;color:var(--muted)}
+  .stripkey i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .ctx{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .ctx div{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .ctx .v{font-family:var(--serif);font-weight:600;font-size:1.5rem;color:var(--ink);line-height:1}
+  .ctx .k{font-size:.8rem;color:var(--muted);margin-top:6px;line-height:1.3}
+
+  /* stat band */
+  .band{background:var(--hero);color:#f3ecdd;padding:11vh 0}
+  .band .wrap{max-width:980px}
+  .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:30px 40px;margin-top:14px}
+  .stat .v{font-family:var(--serif);font-weight:600;font-size:clamp(2.4rem,6vw,3.6rem);color:#f0b95a;line-height:1}
+  .stat .k{margin-top:10px;color:#cfc6b4;font-size:.98rem;line-height:1.45}
+  .stat .k b{color:#fff;font-weight:600}
+
+  /* case study */
+  .case{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:30px;margin-top:30px}
+  .case h3{font-size:1.3rem;margin-bottom:4px}
+  .ledger{display:grid;grid-template-columns:1fr auto;gap:6px 18px;margin-top:18px;font-size:1rem}
+  .ledger .row{display:contents}
+  .ledger .row > div{padding:8px 0;border-bottom:1px solid var(--line)}
+  .ledger .lab{color:#3a352e}
+  .ledger .amt{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+  .ledger .row.out .amt{color:var(--rich)}
+  .ledger .row.left{font-weight:700}
+  .ledger .row.left > div{border-bottom:0;border-top:2px solid var(--ink);font-size:1.08rem}
+
+  /* composition bar */
+  .compbar{display:flex;height:46px;border-radius:10px;overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+  .compbar span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:600;min-width:0}
+  .complegend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:.85rem;color:var(--muted)}
+  .complegend b{color:var(--ink)}
+
+  /* closing + sources */
+  .close{padding:14vh 0 8vh}
+  .close h2{font-size:clamp(2rem,5vw,3.2rem);max-width:16ch}
+  .sources{background:var(--bg-2);border-top:1px solid var(--line);padding:7vh 0 9vh;font-size:.92rem;color:var(--muted)}
+  .sources h3{font-family:var(--sans);font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:16px}
+  .sources ol{margin:0;padding-left:1.3em;line-height:1.7}
+  .sources a{color:var(--reality-dk);text-decoration:none;border-bottom:1px solid var(--line)}
+  .sources a:hover{border-color:var(--reality)}
+  .note{font-size:.84rem;color:var(--muted);margin-top:22px;line-height:1.6;font-style:italic}
+  footer{padding:30px 0;text-align:center;font-size:.82rem;color:var(--muted)}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <svg class="hero__bg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYmax slice" aria-hidden="true" id="heroBg"></svg>
+  <div class="hero__inner wrap">
+    <div class="eyebrow">An interactive story · Britain, income &amp; wealth</div>
+    <h1>Rich, and the <em>last to know it</em></h1>
+    <p class="hero__sub">Most people in Britain's top 10% are convinced they're ordinary. Scroll to see the gap between how wealthy we <em>feel</em> and how wealthy we really <em>are</em> — then find exactly where you fit.</p>
+    <div class="scrollcue"><span class="dot"></span> Scroll to begin</div>
+  </div>
+</header>
+
+<!-- ============ INTRO ============ -->
+<section class="prose">
+  <div class="wrap">
+    <div class="kicker">The view from the middle</div>
+    <h2>Almost everyone thinks they're average.</h2>
+    <p class="lede">Ask people across Britain where they sit on the income ladder and you'll hear the same answer over and over: <em>somewhere in the middle</em>.</p>
+    <p class="big">The cleaner says it. The teacher says it. The management consultant on £120,000 says it too. But we can't all be in the middle — and the people most likely to misjudge their place are the ones standing nearest the top.</p>
+    <p>This is the affluence perception gap. It's measurable, it's surprisingly large, and it quietly shapes how the country votes, gives and governs. Let's start with what the ladder actually looks like.</p>
+  </div>
+</section>
+
+<!-- ============ SCROLLY 1 — INCOME PARADE ============ -->
+<section class="scrolly" id="parade" data-scrolly>
+  <div class="scrolly__graphic">
+    <div class="chart-shell"><div id="paradeChart"></div></div>
+    <div class="chart-cap" id="paradeCap">Every UK earner, lined up poorest to richest →</div>
+  </div>
+  <div class="scrolly__steps">
+    <div class="step" data-step="0">
+      <div class="card"><span class="n">1</span><h3>Line up the whole country.</h3>
+        <p>Take every earner in Britain and stand them in a row, from the lowest income on the left to the highest on the right. Each bar is one slice of the population; its height is what they earn.</p></div>
+    </div>
+    <div class="step" data-step="1">
+      <div class="card"><span class="n">2</span><h3>The typical earner: about £29,000.</h3>
+        <p>Half the country earns less than this. For most of the row, the bars barely change — Britain's incomes are remarkably flat across the bottom three-quarters.</p></div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="card"><span class="n">3</span><h3>£60,000 puts you in the top 10%.</h3>
+        <p>Not "comfortable". Not "doing alright". The <mark>top tenth</mark> of all earners — roughly twice the median wage. Plenty of people here would describe themselves as ordinary.</p></div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="card"><span class="n">4</span><h3>£200,000 — the top 1%.</h3>
+        <p>Here the ladder stops being a ladder and becomes a <mark>wall</mark>. The final few bars rocket off the chart. This is where income stops being about a salary at all.</p></div>
+    </div>
+    <div class="step" data-step="4">
+      <div class="card"><span class="n">5</span><h3>The drama is all at the end.</h3>
+        <p>Almost everyone you know lives on the flat part. The steep climb is invisible from down there — and easy to forget you're on it, if you happen to be standing near the top.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MINI INTERACTIVE — your salary ============ -->
+<section class="tool" id="salaryTool">
+  <div class="wrap">
+    <div class="kicker">A quick gut check</div>
+    <h2 style="font-size:clamp(1.8rem,4.4vw,2.7rem);max-width:20ch">So — where do you actually stand?</h2>
+    <p class="lede" style="margin-top:10px">Type in an annual salary (before tax) and see where it really lands — and where someone earning it would probably <em>guess</em> they land.</p>
+    <div class="panel">
+      <div class="field">
+        <label for="salIn">Annual income, before tax</label>
+        <div class="inrow">
+          <div class="money"><span>£</span><input id="salIn" type="text" inputmode="numeric" value="35,000"></div>
+        </div>
+        <input id="salRange" type="range" min="0" max="1000" value="0">
+        <div class="presets" id="salPresets"></div>
+      </div>
+      <div class="readout">
+        <div class="pct" id="salPct">—<small>of UK earners take home less than you</small></div>
+        <div class="sent" id="salSent"></div>
+      </div>
+      <div class="strip-wrap">
+        <div class="strip" id="salStrip">
+          <div class="bg"></div>
+          <div class="marker" id="salMark" data-l="You" style="left:0"></div>
+          <div class="marker ghost" id="salGhost" data-l="You'd guess" style="left:0"></div>
+        </div>
+        <div class="stripkey">
+          <span><i style="background:var(--ink)"></i>Where you actually rank</span>
+          <span><i style="background:var(--perception)"></i>Where people at this level tend to think they rank</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROSE — the gap ============ -->
+<section class="prose tight">
+  <div class="wrap">
+    <div class="kicker">The perception gap</div>
+    <h2>Why does the top feel like the middle?</h2>
+    <p class="big">Because we don't compare ourselves to the country. We compare ourselves to the people just above us — the bigger house, the second holiday, the private school we <em>didn't</em> manage. Look only upward, and there is always someone richer to feel ordinary against.</p>
+    <p>Researchers have measured this directly. When you ask people which tenth of the population they belong to, the answers bend hard toward the middle — at both ends.</p>
+  </div>
+</section>
+
+<!-- ============ SCROLLY 2 — PERCEPTION CURVE ============ -->
+<section class="scrolly" id="perception" data-scrolly>
+  <div class="scrolly__graphic">
+    <div class="chart-shell"><div id="percChart"></div></div>
+    <div class="chart-cap" id="percCap">Self-perceived vs. actual position on the income ladder</div>
+  </div>
+  <div class="scrolly__steps">
+    <div class="step" data-step="0">
+      <div class="card"><span class="n">1</span><h3>If everyone knew their place…</h3>
+        <p>…the picture would be a straight diagonal. People in the poorest tenth would say "poorest tenth"; people in the richest tenth would say "richest tenth". Reality and perception would match.</p></div>
+    </div>
+    <div class="step" data-step="1">
+      <div class="card"><span class="n">2</span><h3>Here's what people actually say.</h3>
+        <p>The real line is bent flat. Whatever their true position, people's guesses cluster around the middle of the scale. Hardly anyone places themselves at the extremes.</p></div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="card"><span class="n">3</span><h3>The richest barely feel above average.</h3>
+        <p>Those in the top tenth, on average, put themselves only a little over halfway up.</p>
+        <p class="quote">"I feel fairly middle of the road and average — but objectively I know that's completely untrue." <br>— a top-10% earner, interviewed by researchers</p></div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="card"><span class="n">4</span><h3>The poorest do the opposite.</h3>
+        <p>People near the bottom guess <em>higher</em> than they are. From every direction, the answer is the same: "I'm normal." The gap is just biggest, and most consequential, at the top.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROSE — wealth turn ============ -->
+<section class="prose tight">
+  <div class="wrap">
+    <div class="kicker">Income is only half the story</div>
+    <h2>Now do the same thing with wealth.</h2>
+    <p class="big">Income is what lands in your account each month. <mark class="t">Wealth</mark> is what you already own — the house, the pension, the savings, the shares. And wealth in Britain is far, far more lopsided than income.</p>
+  </div>
+</section>
+
+<!-- ============ SCROLLY 3 — WEALTH DISTRIBUTION ============ -->
+<section class="scrolly" id="wealth" data-scrolly>
+  <div class="scrolly__graphic">
+    <div class="chart-shell"><div id="wealthChart"></div></div>
+    <div class="chart-cap" id="wealthCap">Ten equal groups of households — by population, then by wealth</div>
+  </div>
+  <div class="scrolly__steps">
+    <div class="step" data-step="0">
+      <div class="card"><span class="n">1</span><h3>Split Britain into ten equal groups.</h3>
+        <p>Sort every household by wealth, then divide them into ten bands of the same size — each is exactly 10% of households.</p></div>
+    </div>
+    <div class="step" data-step="1">
+      <div class="card"><span class="n">2</span><h3>Now resize them by what they own.</h3>
+        <p>Watch the equal bands distort as each group is sized by its actual share of the nation's wealth. The bottom melts away; the top balloons.</p></div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="card"><span class="n">3</span><h3>9% versus 43%.</h3>
+        <p>The poorest <strong>half</strong> of households own about <mark class="t">9%</mark> of all wealth. The richest <strong>tenth</strong> own <mark class="t">43%</mark>.</p></div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="card"><span class="n">4</span><h3>The top 1% = the bottom 50%.</h3>
+        <p>Britain's wealthiest 1% of households hold about as much as the entire bottom half of the country combined — roughly a tenth of all wealth each.</p>
+        <p class="quote">Source: ONS, Total Wealth in Great Britain, 2020–2022</p></div>
+    </div>
+    <div class="step" data-step="4">
+      <div class="card"><span class="n">5</span><h3>Fifty families, £466 billion.</h3>
+        <p>The 50 richest families in Britain are worth roughly the same as the least wealthy <strong>33 million people</strong> put together.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STAT BAND ============ -->
+<section class="band">
+  <div class="wrap">
+    <div class="eyebrow" style="color:#cdb88a">The shape of British wealth · ONS, 2020–2022</div>
+    <div class="statgrid">
+      <div class="stat"><div class="v">£293,700</div><div class="k">Median household wealth. Half of households have <b>more</b>, half have <b>less</b>.</div></div>
+      <div class="stat"><div class="v">£1.2m</div><div class="k">The threshold to enter the <b>wealthiest 10%</b> of households.</div></div>
+      <div class="stat"><div class="v">£3.1m</div><div class="k">The threshold to enter the <b>wealthiest 1%</b>.</div></div>
+      <div class="stat"><div class="v">0.59</div><div class="k">The <b>wealth Gini</b> coefficient — far higher than the 0.35 for income.</div></div>
+    </div>
+    <div style="margin-top:42px;max-width:640px">
+      <div class="eyebrow" style="color:#cdb88a">What that wealth is made of</div>
+      <div class="compbar" aria-label="Composition of UK household wealth">
+        <span style="flex:40;background:#137a73">Property 40%</span>
+        <span style="flex:35;background:#2f9e95">Pensions 35%</span>
+        <span style="flex:14;background:#dd8a1f">Financial 14%</span>
+        <span style="flex:11;background:#bb3a2c">Physical 11%</span>
+      </div>
+      <div class="complegend" style="color:#cfc6b4">
+        <span>Net property · Private pensions · Financial (savings &amp; shares) · Physical possessions</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WEALTHY BUT WORRIED ============ -->
+<section class="prose">
+  <div class="wrap">
+    <div class="kicker">Wealthy but worried</div>
+    <h2>So why doesn't any of it <em>feel</em> like wealth?</h2>
+    <p class="big">A six-figure income sounds like the finish line. In practice, a household on £100,000 sits in roughly the <strong>top 5%</strong> of the country — and still, in the words of one bank's own guide, gets caught "between being rich and feeling wealthy".</p>
+
+    <div class="case">
+      <h3>A couple on £145,000 a year</h3>
+      <p style="margin:.4em 0 0;color:var(--muted)">After income tax and pension, here's where a typical month actually goes.</p>
+      <div class="ledger">
+        <div class="row"><div class="lab">Take-home pay</div><div class="amt">£8,261</div></div>
+        <div class="row out"><div class="lab">Mortgage</div><div class="amt">−£1,662</div></div>
+        <div class="row out"><div class="lab">Childcare</div><div class="amt">−£750</div></div>
+        <div class="row out"><div class="lab">Everything else (bills, food, transport, life)</div><div class="amt">−£1,945</div></div>
+        <div class="row left"><div class="lab">Left at month's end</div><div class="amt">£3,904</div></div>
+      </div>
+      <p style="margin-top:16px;font-size:.95rem;color:var(--muted)">They keep six months of expenses in reserve — and still worry, mostly about the mortgage rate. To them, this is "just about managing". To the other 95% of the country, it is the dream.</p>
+    </div>
+
+    <p class="big" style="margin-top:40px">This is the engine of the perception gap. We anchor to the people just ahead of us, never to the country behind us. And the feeling has a sting in the tail.</p>
+    <p>When researchers interviewed Britain's top 10% over several years, they found something uncomfortable: the more people had, the more <em>insecure</em> they felt — and the more firmly they opposed taxes and redistribution. Britain's wealthy turned out to be more anti-welfare than the wealthy of almost any comparable country. Convinced they were ordinary, they voted and gave as if they were.</p>
+  </div>
+</section>
+
+<!-- ============ DATA EXPLORER ============ -->
+<section class="tool" id="explorer">
+  <div class="wrap">
+    <div class="kicker">The data explorer</div>
+    <h2 style="font-size:clamp(1.9rem,4.6vw,2.9rem);max-width:18ch">Find your place — in full.</h2>
+    <p class="lede" style="margin-top:10px">Switch between income and wealth, drag the slider, or pick a real-world example. The dark line is where you truly rank; the gold line is where people at that level tend to imagine they rank.</p>
+
+    <div class="panel">
+      <div class="toggle" id="modeToggle">
+        <button data-mode="income" class="on">My income</button>
+        <button data-mode="wealth">My household wealth</button>
+      </div>
+      <div class="field">
+        <label id="exLabel" for="exIn">Annual income, before tax</label>
+        <div class="inrow">
+          <div class="money"><span>£</span><input id="exIn" type="text" inputmode="numeric" value="35,000"></div>
+        </div>
+        <input id="exRange" type="range" min="0" max="1000" value="0">
+        <div class="presets" id="exPresets"></div>
+      </div>
+
+      <div class="readout">
+        <div class="pct" id="exPct">—<small id="exPctSub">of UK earners have less than you</small></div>
+        <div class="sent" id="exSent"></div>
+      </div>
+
+      <div class="strip-wrap">
+        <div class="strip" id="exStrip">
+          <div class="bg"></div>
+          <div class="marker" id="exMark" data-l="You" style="left:0"></div>
+          <div class="marker ghost" id="exGhost" data-l="Feels like" style="left:0"></div>
+        </div>
+        <div class="stripkey" id="exTicks"></div>
+      </div>
+
+      <div class="ctx" id="exCtx"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<section class="close">
+  <div class="wrap">
+    <div class="kicker">Why the gap matters</div>
+    <h2>If the people with the most are sure they're ordinary, they'll govern as if they are.</h2>
+    <p class="big" style="margin-top:18px">The perception gap isn't a harmless quirk of modesty. It shapes who we think deserves help, whose taxes feel "fair", and whose struggles count as real. A country that can't see its own wealth can't have an honest argument about how to share it.</p>
+    <p>Closing the gap doesn't require agreeing on what to do. It just requires seeing the ladder clearly — including the part you're standing on.</p>
+  </div>
+</section>
+
+<!-- ============ SOURCES ============ -->
+<section class="sources">
+  <div class="wrap">
+    <h3>Sources &amp; data</h3>
+    <ol>
+      <li>ONS — <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/personalandhouseholdfinances/incomeandwealth/bulletins/totalwealthingreatbritain/april2020tomarch2022">Total wealth in Great Britain, April 2020 to March 2022</a> (median £293,700; top 10% £1.2m; top 1% £3.1m; wealth Gini 0.59; composition).</li>
+      <li>The Equality Trust — <a href="https://equalitytrust.org.uk/scale-economic-inequality-uk/">The Scale of Economic Inequality in the UK</a> (top 10% hold 43% of wealth; bottom 50% hold 9%; 50 richest families ≈ £466bn; income shares).</li>
+      <li>The Conversation — <a href="https://theconversation.com/wealthy-but-worried-why-the-uks-top-10-are-turning-their-backs-on-the-rest-of-society-213270">Wealthy but worried: why the UK's top 10% are turning their backs on the rest of society</a> (top-10% income threshold ≈ £59,200; perception &amp; attitude findings; interview quote).</li>
+      <li>Chase UK — <a href="https://www.chase.co.uk/gb/en/hub/living-on-100k/">Living on £100k</a> (six-figure household ≈ top 5%; the £145k monthly budget case study; "rich vs. feeling wealthy").</li>
+      <li>The Guardian — <a href="https://www.theguardian.com/commentisfree/2024/jan/24/britain-richest-10-per-cent-wealthy-inequality-labour-private-schools">Britain's richest 10% and the stories the wealthy tell themselves</a>.</li>
+      <li>New Statesman — <a href="https://www.newstatesman.com/politics/economy/2023/07/rich-people-britain-sad">Why rich people in Britain are sad</a>.</li>
+      <li>HMRC Survey of Personal Incomes / IFS — individual income percentiles (top 10% ≈ £60k; top 1% ≈ £200k).</li>
+    </ol>
+    <p class="note">A note on the numbers: income percentiles use individual gross income among earners; wealth percentiles use total household net wealth (ONS). Headline statistics are quoted directly from the sources above. The percentile look-up tools interpolate between published thresholds, so treat a result as a close estimate, not an exact rank. The "where people think they rank" line is a stylised illustration of a finding replicated across many surveys — that self-placement compresses toward the middle — not a single published dataset.</p>
+  </div>
+</section>
+
+<footer>Built as an independent data-storytelling project · Figures current to the cited ONS, HMRC, Equality Trust, Chase and academic sources.</footer>
+
+<script>
+"use strict";
+/* =========================================================
+   Helpers
+========================================================= */
+const $ = s => document.querySelector(s);
+const clamp = (v,a,b) => Math.max(a, Math.min(b,v));
+const gbp = n => '£' + Math.round(n).toLocaleString('en-GB');
+const gbpShort = n => {
+  if(n>=1e6) return '£'+(n/1e6).toFixed(n>=1e7?0:1).replace(/\.0$/,'')+'m';
+  if(n>=1e3) return '£'+Math.round(n/1e3)+'k';
+  return '£'+Math.round(n);
+};
+const ordinal = n => { n=Math.round(n); const s=["th","st","nd","rd"],v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+
+/* anchor tables: [value, percentile-below].  Interpolated linearly. */
+const INCOME = [[0,0],[12570,12],[20000,33],[29000,50],[40000,75],[50000,84],[60000,90],[80000,95],[100000,96.5],[150000,98.6],[200000,99],[350000,99.6],[500000,99.8],[1000000,99.95]];
+const WEALTH = [[0,3],[16500,10],[50000,20],[100000,30],[150000,37],[200000,43],[293700,50],[400000,57],[600000,68],[1000000,86],[1200500,90],[2000000,96],[3121500,99],[5000000,99.7],[10000000,99.95]];
+
+function pctFromValue(anchors,v){
+  if(v<=anchors[0][0]) return anchors[0][1];
+  for(let i=1;i<anchors.length;i++){
+    const [v0,p0]=anchors[i-1],[v1,p1]=anchors[i];
+    if(v<=v1){ const t=(v-v0)/(v1-v0); return p0+t*(p1-p0); }
+  }
+  return anchors[anchors.length-1][1];
+}
+function valueFromPct(anchors,p){
+  if(p<=anchors[0][1]) return anchors[0][0];
+  for(let i=1;i<anchors.length;i++){
+    const [v0,p0]=anchors[i-1],[v1,p1]=anchors[i];
+    if(p<=p1){ const t=(p-p0)/(p1-p0); return v0+t*(v1-v0); }
+  }
+  return anchors[anchors.length-1][0];
+}
+/* perceived percentile: documented compression toward the middle (~55th) */
+const perceivedPct = p => clamp(54 + (p-54)*0.38, 4, 96);
+
+/* log slider mapping over [min,max] using 0..1000 */
+function sliderToVal(s,min,max){ const t=s/1000; return min===0 ? max*Math.pow(t,3) : Math.exp(Math.log(min)+(Math.log(max)-Math.log(min))*t); }
+function valToSlider(v,min,max){ if(min===0){ return clamp(Math.pow(clamp(v,0,max)/max,1/3)*1000,0,1000);} return clamp((Math.log(clamp(v,min,max))-Math.log(min))/(Math.log(max)-Math.log(min))*1000,0,1000); }
+
+const parseMoney = str => { const n=parseFloat(String(str).replace(/[^0-9.]/g,'')); return isNaN(n)?0:n; };
+
+/* =========================================================
+   Progress bar + hero backdrop
+========================================================= */
+const progress = $('#progress');
+function onScroll(){
+  const h=document.documentElement;
+  const max=h.scrollHeight-h.clientHeight;
+  progress.style.width=(max>0?(h.scrollTop/max*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+
+(function heroBg(){
+  const svg=$('#heroBg'); if(!svg) return;
+  const W=1200,H=700,n=60; let s='';
+  for(let i=0;i<n;i++){
+    const x=i/(n-1)*W;
+    const p=(i/(n-1))*100;
+    const v=valueFromPct(INCOME,clamp(p,0,99.6));
+    const hgt=clamp(Math.pow(v/200000,0.5),0,1)*H*0.9;
+    const col=p>97?'#f0b95a':p>90?'#cdb88a':'#3a554f';
+    s+=`<rect x="${x.toFixed(1)}" y="${(H-hgt).toFixed(1)}" width="${(W/n*0.62).toFixed(1)}" height="${hgt.toFixed(1)}" fill="${col}" opacity="${0.25+ (p>90?0.5:0.15)}"/>`;
+  }
+  svg.innerHTML=s;
+})();
+
+/* =========================================================
+   CHART 1 — Income parade
+========================================================= */
+const paradeState = {svg:null, bars:[], anno:null};
+(function buildParade(){
+  const W=660,H=420,padL=8,padR=8,padB=46,padT=30;
+  const n=100, capVal=110000;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const bw=innerW/n;
+  let bars='';
+  for(let i=0;i<n;i++){
+    const p=i+0.5;
+    let v=valueFromPct(INCOME, Math.min(p,99.5));
+    if(i===99) v=valueFromPct(INCOME,99.7);
+    const clipped=Math.min(v,capVal);
+    const hgt=(clipped/capVal)*innerH;
+    const x=padL+i*bw;
+    const over=v>capVal;
+    bars+=`<rect class="bar" data-i="${i}" x="${x.toFixed(2)}" y="${(padT+innerH-hgt).toFixed(2)}" width="${(bw*0.86).toFixed(2)}" height="${hgt.toFixed(2)}" rx="0.6" fill="#bcae99" data-base="#bcae99"/>`;
+    if(over) bars+=`<text class="anno" x="${(x+bw*0.43).toFixed(2)}" y="${(padT+innerH-hgt-4).toFixed(2)}" text-anchor="middle" fill="#bb3a2c" font-size="9" opacity="0">▲</text>`;
+  }
+  const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Distribution of UK incomes from lowest to highest earner">
+    <line class="grid-l" x1="${padL}" y1="${padT+innerH}" x2="${W-padR}" y2="${padT+innerH}"/>
+    <g id="paradeBars">${bars}</g>
+    <g id="paradeAnno"></g>
+    <text class="axis-l" x="${padL}" y="${H-8}">poorest</text>
+    <text class="axis-l" x="${W-padR}" y="${H-8}" text-anchor="end">richest 1%</text>
+  </svg>`;
+  $('#paradeChart').innerHTML=svg;
+  paradeState.svg=$('#paradeChart svg');
+  paradeState.bars=[...paradeState.svg.querySelectorAll('.bar')];
+  paradeState.anno=$('#paradeAnno');
+})();
+
+function paradeStep(k){
+  const st=paradeState; if(!st.svg) return;
+  const W=660,padL=8,padR=8,innerW=W-padL-padR,bw=innerW/100,padT=30,innerH=420-padT-46;
+  st.bars.forEach((b,i)=>{
+    let fill='#cfc4b2', op=1;
+    if(k>=1 && i===49){ fill='#137a73'; }
+    if(k>=2 && i>=89 && i<=90){ fill='#dd8a1f'; }
+    if(k>=3 && i>=96){ fill='#bb3a2c'; }
+    if(k===4){ fill = i>=96 ? '#bb3a2c' : (i>=89&&i<=90?'#dd8a1f':'#cfc4b2'); op = i<75?0.55:1; }
+    b.setAttribute('fill',fill); b.style.opacity=op;
+  });
+  const labels={
+    0:'',
+    1:{i:49,t:'£29,000',sub:'median',col:'#137a73'},
+    2:{i:90,t:'£60,000',sub:'top 10%',col:'#c87f12'},
+    3:{i:97,t:'£200,000+',sub:'top 1%',col:'#bb3a2c'},
+    4:{i:97,t:'£200,000+',sub:'top 1%',col:'#bb3a2c'}
+  };
+  const L=labels[k];
+  if(!L){ st.anno.innerHTML=''; }
+  else{
+    const x=padL+(L.i+0.5)*bw;
+    let v=valueFromPct(INCOME,Math.min(L.i+0.5,99.5)); if(L.i>=96) v=200000;
+    const clipped=Math.min(v,110000); const hgt=(clipped/110000)*innerH;
+    const y=padT+innerH-hgt;
+    st.anno.innerHTML=
+      `<line x1="${x}" y1="${y-6}" x2="${x}" y2="${Math.max(y-40,padT-6)}" stroke="${L.col}" stroke-width="1.5"/>`+
+      `<text class="anno" x="${x}" y="${Math.max(y-46,padT-12)}" text-anchor="middle" fill="${L.col}" font-size="15">${L.t}</text>`+
+      `<text class="axis-l" x="${x}" y="${Math.max(y-30,padT+2)}" text-anchor="middle" fill="${L.col}" font-size="11">${L.sub}</text>`;
+  }
+  const caps=['Every UK earner, lined up poorest to richest →',
+    'Most of the country sits on the long, flat stretch.',
+    'A tenth of earners are above this line.',
+    'The top 1% tower over everyone else.',
+    'The climb is invisible from the bottom.'];
+  $('#paradeCap').textContent=caps[k]||caps[0];
+}
+
+/* =========================================================
+   CHART 2 — Perception curve
+========================================================= */
+const PERC=[[1,3.3],[2,3.7],[3,4.1],[4,4.6],[5,5.0],[6,5.3],[7,5.4],[8,5.4],[9,5.3],[10,5.6]];
+(function buildPerc(){
+  const W=660,H=440,pad=54;
+  const innerW=W-pad-20, innerH=H-pad-pad+10;
+  const x=d=>pad+ (d-1)/9*innerW;
+  const y=d=>(H-pad)- (d-1)/9*innerH;
+  let grid='';
+  for(let g=1;g<=10;g++){ grid+=`<line class="grid-l" x1="${pad}" y1="${y(g)}" x2="${W-20}" y2="${y(g)}" opacity="${g===1?1:.4}"/>`; }
+  const diag=`M ${x(1)} ${y(1)} L ${x(10)} ${y(10)}`;
+  const curve='M '+PERC.map(([d,p])=>`${x(d).toFixed(1)} ${y(p).toFixed(1)}`).join(' L ');
+  const pts=PERC.map(([d,p],i)=>`<circle class="ppoint pp" data-i="${i}" cx="${x(d).toFixed(1)}" cy="${y(p).toFixed(1)}" r="4.5" fill="#dd8a1f" opacity="0"/>`).join('');
+  $('#percChart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Perceived versus actual income position">
+    <g>${grid}</g>
+    <path id="percDiag" d="${diag}" fill="none" stroke="#9aa39f" stroke-width="2" stroke-dasharray="6 6" opacity="0"/>
+    <path id="percLine" d="${curve}" fill="none" stroke="#dd8a1f" stroke-width="3.5" opacity="0" stroke-linecap="round" stroke-linejoin="round"/>
+    <g id="percPts">${pts}</g>
+    <text id="percTopLab" class="anno" x="${x(10)}" y="${y(5.6)-14}" text-anchor="end" fill="#bb3a2c" font-size="13" opacity="0">"…average, really"</text>
+    <text id="percBotLab" class="anno" x="${x(1)+6}" y="${y(3.3)-12}" fill="#137a73" font-size="13" opacity="0">"…doing OK"</text>
+    <text class="axis-t" x="${pad}" y="${H-16}">Poorest 10%</text>
+    <text class="axis-t" x="${W-20}" y="${H-16}" text-anchor="end">Richest 10%</text>
+    <text class="axis-l" x="${pad}" y="${H-34}">where you actually are  →</text>
+    <text class="axis-l" x="14" y="${pad-22}" transform="rotate(-90 14 ${pad-22})">↑ where you think you are</text>
+  </svg>`;
+})();
+function percStep(k){
+  const diag=$('#percDiag'), line=$('#percLine');
+  if(!diag) return;
+  diag.style.opacity = k>=0 ? 1 : 0;
+  line.style.opacity = k>=1 ? 1 : 0;
+  document.querySelectorAll('.pp').forEach(c=>c.style.opacity = k>=1?1:0);
+  $('#percTopLab').style.opacity = k>=2?1:0;
+  document.querySelectorAll('.pp').forEach((c,i)=>{ c.setAttribute('r', (k>=2&&i===9)||(k>=3&&i===0)?7:4.5); c.setAttribute('fill', (k>=2&&i===9)?'#bb3a2c':(k>=3&&i===0)?'#137a73':'#dd8a1f'); });
+  $('#percBotLab').style.opacity = k>=3?1:0;
+  const caps=['If perception matched reality, it would be a straight line.',
+    'Instead, everyone bends toward the middle.',
+    'The richest tenth place themselves barely above average.',
+    'The poorest tenth place themselves well above their real position.'];
+  $('#percCap').textContent=caps[k]||caps[0];
+}
+
+/* =========================================================
+   CHART 3 — Wealth: population vs wealth share
+========================================================= */
+const WSHARE=[0.3,0.9,1.6,2.6,3.6,5.5,8.5,13.0,21.0,43.0]; // poorest -> richest
+(function buildWealth(){
+  const W=660,H=440,padT=24,padB=40, gap=120;
+  const barW=120, leftX=110, rightX=leftX+gap+barW;
+  const innerH=H-padT-padB;
+  const colours=['#dfe7e4','#cdddd9','#b3cdc8','#95bdb6','#76aaa1','#4f978c','#2f8579','#dd8a1f','#cf6a2a','#bb3a2c'];
+  let left='', right='', links='';
+  // population bar (equal tenths), drawn richest at top
+  let yL=padT;
+  const segH=innerH/10;
+  const yLefts=[],yRights=[];
+  for(let i=9;i>=0;i--){
+    yLefts[i]=yL;
+    left+=`<rect class="pseg" data-side="l" data-i="${i}" x="${leftX}" y="${yL.toFixed(1)}" width="${barW}" height="${(segH-1).toFixed(1)}" fill="${colours[i]}" stroke="#fff" stroke-width="1"/>`;
+    yL+=segH;
+  }
+  // wealth bar, sized by share, richest at top
+  let yR=padT;
+  for(let i=9;i>=0;i--){
+    const h=WSHARE[i]/100*innerH;
+    yRights[i]=yR;
+    right+=`<rect class="pseg wseg" data-side="r" data-i="${i}" x="${rightX}" y="${yR.toFixed(1)}" width="${barW}" height="${Math.max(h-0.6,0.6).toFixed(1)}" fill="${colours[i]}" stroke="#fff" stroke-width="1"/>`;
+    yR+=h;
+  }
+  // connectors
+  for(let i=0;i<10;i++){
+    links+=`<path class="link" data-i="${i}" d="M ${leftX+barW} ${(yLefts[i]+segH/2).toFixed(1)} C ${leftX+barW+gap*0.5} ${(yLefts[i]+segH/2).toFixed(1)}, ${rightX-gap*0.5} ${(yRights[i]+WSHARE[i]/100*innerH/2).toFixed(1)}, ${rightX} ${(yRights[i]+WSHARE[i]/100*innerH/2).toFixed(1)}" fill="none" stroke="#b9b0a1" stroke-width="1" opacity="0"/>`;
+  }
+  $('#wealthChart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="UK households by population versus share of wealth">
+    <g id="wLinks">${links}</g>
+    <g id="wLeft">${left}</g>
+    <g id="wRight">${right}</g>
+    <text class="axis-t" x="${leftX+barW/2}" y="16" text-anchor="middle">Population</text>
+    <text class="axis-t" x="${rightX+barW/2}" y="16" text-anchor="middle">Wealth</text>
+    <text class="axis-l" x="${leftX+barW/2}" y="${H-20}" text-anchor="middle">10 equal tenths</text>
+    <text class="axis-l" x="${rightX+barW/2}" y="${H-20}" text-anchor="middle">share owned</text>
+    <g id="wAnno"></g>
+  </svg>`;
+})();
+function wealthStep(k){
+  const left=document.querySelectorAll('#wLeft .pseg');
+  const right=document.querySelectorAll('#wRight .wseg');
+  const links=document.querySelectorAll('.link');
+  const anno=$('#wAnno');
+  if(!right.length) return;
+  // reveal right bar from step 1
+  right.forEach(r=>{ r.style.opacity = k>=1?1:0; });
+  links.forEach(l=>{ l.style.opacity = k>=1?0.7:0; });
+  // highlight
+  left.forEach((s,i)=>{ s.style.opacity = (k>=2 && i>=5) || (k>=3 && i===9) ? 1 : (k>=2? .35:1); });
+  right.forEach((s,i)=>{
+    let hl=1;
+    if(k===2) hl = i<5?1:0.35;
+    if(k>=3) hl = (i===9)?1:0.4;
+    if(k>=4) hl = (i===9)?1:0.3;
+    s.style.opacity = (k>=1)?hl:0;
+  });
+  let a='';
+  if(k===2){ a=`<text class="anno" x="540" y="60" fill="#bb3a2c" font-size="15" text-anchor="end">Richest 10%</text><text class="anno" x="540" y="80" fill="#bb3a2c" font-size="22" text-anchor="end">43%</text><text class="anno" x="540" y="400" fill="#137a73" font-size="13" text-anchor="end">Poorest 50%: 9%</text>`; }
+  if(k===3){ a=`<text class="anno" x="540" y="58" fill="#bb3a2c" font-size="14" text-anchor="end">Top 1% ≈ bottom 50%</text><text class="anno" x="540" y="80" fill="#bb3a2c" font-size="14" text-anchor="end">≈ 10% each</text>`; }
+  if(k===4){ a=`<text class="anno" x="540" y="58" fill="#bb3a2c" font-size="16" text-anchor="end">50 families</text><text class="anno" x="540" y="82" fill="#bb3a2c" font-size="16" text-anchor="end">£466bn</text>`; }
+  anno.innerHTML=a;
+  const caps=['Ten equal groups of households.',
+    'Resized by the wealth each group actually holds.',
+    'The poorest half: 9%. The richest tenth: 43%.',
+    'The top 1% hold about as much as the bottom half.',
+    'Fifty families ≈ 33 million people.'];
+  $('#wealthCap').textContent=caps[k]||caps[0];
+}
+
+/* =========================================================
+   Scrollytelling — IntersectionObserver
+========================================================= */
+const stepHandlers={ parade:paradeStep, perception:percStep, wealth:wealthStep };
+function initScrolly(id){
+  const section=document.getElementById(id);
+  const steps=[...section.querySelectorAll('.step')];
+  const handler=stepHandlers[id];
+  handler(0);
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        steps.forEach(s=>s.classList.remove('is-active'));
+        e.target.classList.add('is-active');
+        handler(+e.target.dataset.step);
+      }
+    });
+  },{rootMargin:'-46% 0px -46% 0px',threshold:0});
+  steps.forEach(s=>io.observe(s));
+}
+['parade','perception','wealth'].forEach(initScrolly);
+
+/* =========================================================
+   Strip / marker helper
+========================================================= */
+function placeMarkers(stripEl,markEl,ghostEl,pct,perc){
+  markEl.style.left=clamp(pct,0,100)+'%';
+  ghostEl.style.left=clamp(perc,0,100)+'%';
+}
+
+/* =========================================================
+   MINI INTERACTIVE — salary
+========================================================= */
+const salPresetsData=[['Min wage, full-time','£23,800',23800],['Median earner','£29,000',29000],['Nurse (Band 6)','£37,000',37000],['£100,000','£100,000',100000],['Top 1%','£200,000',200000]];
+(function initSalary(){
+  const inEl=$('#salIn'), rng=$('#salRange'), pres=$('#salPresets');
+  const MIN=0,MAX=500000;
+  pres.innerHTML=salPresetsData.map(p=>`<button data-v="${p[2]}">${p[0]}</button>`).join('');
+  function render(v){
+    v=clamp(v,0,2000000);
+    const p=pctFromValue(INCOME,v);
+    const perc=perceivedPct(p);
+    $('#salPct').innerHTML=`${ordinal(p)}<small>percentile — you earn more than ${p.toFixed(p>99?1:0)}% of UK earners</small>`;
+    const gap=p-perc;
+    let sent;
+    if(p>=90) sent=`You're in the <b>top ${(100-p).toFixed(p>99?1:0)}%</b> — but most people earning this would guess they're around the <b>${ordinal(perc)}</b>. That's the gap.`;
+    else if(p>=50) sent=`Comfortably above the typical UK earner. The median is about <b>£29,000</b>.`;
+    else sent=`Below the median UK wage of about <b>£29,000</b> — though many here picture themselves higher up.`;
+    $('#salSent').innerHTML=sent;
+    placeMarkers($('#salStrip'),$('#salMark'),$('#salGhost'),p,perc);
+  }
+  function fromInput(){ const v=parseMoney(inEl.value); rng.value=valToSlider(v,MIN,MAX); render(v); }
+  function fromRange(){ const v=sliderToVal(+rng.value,MIN,MAX); const rounded=Math.round(v/100)*100; inEl.value=rounded.toLocaleString('en-GB'); render(rounded); }
+  inEl.addEventListener('input',fromInput);
+  inEl.addEventListener('blur',()=>{ inEl.value=parseMoney(inEl.value).toLocaleString('en-GB'); });
+  rng.addEventListener('input',fromRange);
+  pres.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; const v=+b.dataset.v; inEl.value=v.toLocaleString('en-GB'); fromInput(); });
+  fromInput();
+})();
+
+/* =========================================================
+   DATA EXPLORER — income / wealth
+========================================================= */
+(function initExplorer(){
+  const cfg={
+    income:{ anchors:INCOME, min:0,max:500000, label:'Annual income, before tax', sub:'of UK earners have less than you',
+      presets:[['Median £29k',29000],['£60k · top 10%',60000],['£100k',100000],['£200k · top 1%',200000]],
+      ticks:[[50,'median £29k'],[90,'top 10% £60k'],[99,'top 1% £200k']],
+      ctx:p=>[['£29,000','Median UK earner'],['£60,000','Top 10% starts here'],['£200,000','Top 1% starts here']],
+      sent:(p,perc,v)=>{
+        if(p>=90) return `You're in the <b>top ${(100-p).toFixed(p>99?1:0)}%</b> of earners. People at this level typically imagine they're around the <b>${ordinal(perc)}</b> percentile — a perception gap of about <b>${Math.round(p-perc)} points</b>.`;
+        if(p>=50) return `Above the typical earner (median ≈ £29,000), and likely to feel comfortably "middle".`;
+        return `Below the median wage of about £29,000.`;
+      }},
+    wealth:{ anchors:WEALTH, min:0,max:5000000, label:'Total household wealth (property + pensions + savings − debts)', sub:'of UK households are worth less than you',
+      presets:[['Median £294k',293700],['£500k',500000],['£1.2m · top 10%',1200500],['£3.1m · top 1%',3121500]],
+      ticks:[[50,'median £294k'],[90,'top 10% £1.2m'],[99,'top 1% £3.1m']],
+      ctx:p=>[['£293,700','Median household'],['£1.2m','Top 10% starts here'],['£3.1m','Top 1% starts here']],
+      sent:(p,perc,v)=>{
+        if(p>=90) return `Your household is in the <b>top ${(100-p).toFixed(p>99?1:0)}%</b> for wealth. Remember: the top 1% alone hold about as much as the entire bottom half of the country.`;
+        if(p>=50) return `Wealthier than the median household (≈ £293,700) — much of it likely tied up in property and pensions.`;
+        return `Below the median household wealth of £293,700. Half of that median is property and pensions most people can't spend.`;
+      }}
+  };
+  let mode='income';
+  const inEl=$('#exIn'), rng=$('#exRange'), pres=$('#exPresets'), toggle=$('#modeToggle');
+
+  function renderTicks(){
+    const c=cfg[mode];
+    $('#exTicks').innerHTML='<span style="width:100%;display:block;color:var(--muted)">'+
+      c.ticks.map(t=>`<b style="color:var(--reality-dk)">${ordinal(t[0])}</b> ${t[1]}`).join(' &nbsp;·&nbsp; ')+'</span>';
+  }
+  function render(v){
+    const c=cfg[mode];
+    v=clamp(v,0,c.max*4);
+    const p=pctFromValue(c.anchors,v);
+    const perc=perceivedPct(p);
+    $('#exPct').innerHTML=`${ordinal(p)}<small id="exPctSub">${(p).toFixed(p>99?1:0)}% ${c.sub}</small>`;
+    $('#exSent').innerHTML=c.sent(p,perc,v);
+    placeMarkers($('#exStrip'),$('#exMark'),$('#exGhost'),p,perc);
+    $('#exMark').setAttribute('data-l', mode==='income'?'You earn':'You own');
+    $('#exGhost').setAttribute('data-l','Feels like '+ordinal(perc));
+    $('#exCtx').innerHTML=c.ctx(p).map(x=>`<div><div class="v">${x[0]}</div><div class="k">${x[1]}</div></div>`).join('');
+  }
+  function fromInput(){ const v=parseMoney(inEl.value); rng.value=valToSlider(v,cfg[mode].min,cfg[mode].max); render(v); }
+  function fromRange(){ const v=sliderToVal(+rng.value,cfg[mode].min,cfg[mode].max); const step=mode==='income'?100:1000; const r=Math.round(v/step)*step; inEl.value=r.toLocaleString('en-GB'); render(r); }
+  function setMode(m,seed){
+    mode=m;
+    [...toggle.children].forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+    const c=cfg[m];
+    $('#exLabel').textContent=c.label;
+    pres.innerHTML=c.presets.map(p=>`<button data-v="${p[1]}">${p[0]}</button>`).join('');
+    renderTicks();
+    const v=seed!=null?seed:(m==='income'?35000:293700);
+    inEl.value=v.toLocaleString('en-GB'); fromInput();
+  }
+  inEl.addEventListener('input',fromInput);
+  inEl.addEventListener('blur',()=>{ inEl.value=parseMoney(inEl.value).toLocaleString('en-GB'); });
+  rng.addEventListener('input',fromRange);
+  pres.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; inEl.value=(+b.dataset.v).toLocaleString('en-GB'); fromInput(); });
+  toggle.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; setMode(b.dataset.mode); });
+  setMode('income');
+})();
+</script>
+</body>
+</html>
